@@ -52,10 +52,15 @@ if do_backup:
     print('Running backup...')
     os.system(duplicati_command + ' > ' + log_file)
 
-    # Create done file
-    print('Backup successful.')
-    print('Creating done file...')
-    pathlib.Path(done_file).touch()
+    # Check logfile for successful backup
+    last_line_log = subprocess.check_output(['tail', '-1', log_file]).decode().strip()
+    if last_line_log == 'Backup completed successfully!':
+        # Create done file
+        print('Backup successful.')
+        print('Creating done file...')
+        pathlib.Path(done_file).touch()
+    else:
+        print('Backup unsuccessful.')
 elif not mounted:
     print('Drive not mounted.')
 elif done_today:
